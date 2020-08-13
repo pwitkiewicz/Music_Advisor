@@ -1,3 +1,5 @@
+package application;
+
 import java.util.Scanner;
 
 public class Menu {
@@ -25,11 +27,11 @@ public class Menu {
         }
 
         if(command.equals("auth")) {
-            System.out.println(Auth.sendRequest());
+            System.out.println(api.Auth.sendRequest());
             System.out.println("---SUCCESS---");
         }
 
-        if(!Auth.getStatus()) {
+        if(!api.Auth.getStatus()) {
             System.out.println("Please, provide access for application.");
             return;
         }

@@ -1,3 +1,5 @@
+package api;
+
 public class Auth {
     private static boolean authStatus = false;
     private static final String clientID = "1a3b4e258da845a4b2478cb266af39d0";
