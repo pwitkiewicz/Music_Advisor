@@ -1,9 +1,13 @@
 package application;
 
+
+import api.Auth;
+
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Menu {
-    public static void launch() {
+    public static void launch() throws IOException, InterruptedException {
         Scanner in = new Scanner(System.in);
         String command = "";
 
@@ -15,7 +19,7 @@ public class Menu {
         System.out.println("---GOODBYE!---");
     }
 
-    private static void parseCommand(String command) {
+    private static void parseCommand(String command) throws IOException, InterruptedException {
         if(command.equals("help")) {
             System.out.print("Available commands:\n" +
                     "\t- auth (authorize app)" +
@@ -27,11 +31,17 @@ public class Menu {
         }
 
         if(command.equals("auth")) {
-            System.out.println(api.Auth.sendRequest());
-            System.out.println("---SUCCESS---");
+            Auth.init();
+
+            if (Auth.getStatus()) {
+                System.out.println("---SUCCESS---");
+            } else {
+                System.out.println("code not received");
+                System.out.println("---FAILURE---");
+            }
         }
 
-        if(!api.Auth.getStatus()) {
+        if(!Auth.getStatus()) {
             System.out.println("Please, provide access for application.");
             return;
         }
