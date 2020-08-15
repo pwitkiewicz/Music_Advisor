@@ -14,8 +14,8 @@ import java.util.Base64;
 
 public class Auth {
     private static boolean isAuthorized = false;
-    private static String authCode = null;
-    private static String accessToken = null;
+    private static String authCode = "";
+    private static String accessToken = "";
     private static final String clientID = "1a3b4e258da845a4b2478cb266af39d0";
     private static final String clientSecret = "d9d6f245e2e3456dbda2d3aef2a2d84a";
     private static String redirectURL = "http://localhost:8080";
@@ -48,7 +48,7 @@ public class Auth {
         requestToken();
     }
 
-    private static void listenForQuery() throws IOException {
+    private static void listenForQuery() throws IOException, InterruptedException {
         // start the server & listen incoming TCP connections on 8080 port
         HttpServer server = HttpServer.create();
         server.bind(new InetSocketAddress(8080), 0);
@@ -57,28 +57,27 @@ public class Auth {
         server.createContext("/",
                 new HttpHandler() {
                     public void handle(HttpExchange exchange) throws IOException {
-                        String query = exchange.getRequestURI().getQuery();
+                        String query = "";
+                        query += exchange.getRequestURI().getQuery();
 
-                        String response = "";
+                        String response = "Not found authorization code. Try again.";
 
 
                         if (query.contains("code")) {
-                            response = "Got the code. Return back to your program";
-                            String[] querySplit = query.split("=");
-                            authCode = querySplit[1];
-                        } else {
-                            response = "Authorization code not found. Try again.";
+                            response = "Got the code. Return back to your program.";
                         }
 
                         exchange.sendResponseHeaders(200, response.length());
                         exchange.getResponseBody().write(response.getBytes());
                         exchange.getResponseBody().close();
+
+                        authCode = query.substring(5);
                     }
                 }
         );
 
         // wait for the query
-        while (authCode == null) {
+        while (authCode.isEmpty()) {
             Thread.onSpinWait();
         }
 
