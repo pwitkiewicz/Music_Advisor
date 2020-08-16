@@ -1,7 +1,6 @@
-package application;
+package Music_Advisor;
 
-
-import api.Auth;
+import Music_Advisor.api.Auth;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -42,12 +41,12 @@ public class Menu {
         }
 
         if(!Auth.getStatus()) {
-            System.out.println("Please, provide access for application.");
+            System.out.println("Please, provide access for main.java.Music_Advisor.application.");
             return;
         }
 
         if(command.equals("featured")) {
-            // TODO api integration
+            // TODO main.java.Music_Advisor.api integration
             System.out.println("---FEATURED---\n" +
                     "Mellow Morning\n" +
                     "Wake Up and Smell the Coffee\n" +
@@ -56,7 +55,7 @@ public class Menu {
         }
 
         if(command.equals("new")) {
-            // TODO api integration
+            // TODO main.java.Music_Advisor.api integration
             System.out.println("---NEW RELEASES---\n" +
                     "Mountains [Sia, Diplo, Labrinth]\n" +
                     "Runaway [Lil Peep]\n" +
@@ -65,7 +64,7 @@ public class Menu {
         }
 
         if(command.equals("categories")) {
-            // TODO api integration
+            // TODO main.java.Music_Advisor.api integration
             System.out.println("---CATEGORIES---\n" +
                     "Top Lists\n" +
                     "Pop\n" +
@@ -76,7 +75,7 @@ public class Menu {
         String[] playlists_command = command.split("\\s+");
 
         if(playlists_command[0].equals("playlists")) {
-            // TODO api integration
+            // TODO main.java.Music_Advisor.api integration
             System.out.println("---" + playlists_command[1].toUpperCase() + " PLAYLISTS---\n" +
                     "Walk Like A Badass  \n" +
                     "Rage Beats  \n" +

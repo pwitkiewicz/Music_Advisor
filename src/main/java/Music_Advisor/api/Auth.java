@@ -1,5 +1,7 @@
-package api;
+package Music_Advisor.api;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -37,14 +39,14 @@ public class Auth {
 
         listenForQuery();
 
-        if (authCode == null) {
+        if (authCode.isEmpty()) {
             return;
+        } else {
+            isAuthorized = true;
         }
 
-        System.out.println("code received");
-        isAuthorized = true;
-
-        System.out.println("making http request for access_token...");
+        System.out.println("code received" +
+                "\n" + "making http request for access_token...");
         requestToken();
     }
 
@@ -98,8 +100,10 @@ public class Auth {
                 .headers("Content-Type", "application/x-www-form-urlencoded",
                         "Authorization", "Basic " + credentials)
                 .uri(URI.create(authServer + "/api/token"))
-                .POST(HttpRequest.BodyPublishers.ofString("grant_type=authorization_code" +
-                        "&code=" + authCode + "&redirect_uri=" + redirectURL))
+                .POST(HttpRequest.BodyPublishers.ofString(
+                        "grant_type=authorization_code" +
+                                "&code=" + authCode +
+                                "&redirect_uri=" + redirectURL))
                 .build();
 
         // send & catch http response
@@ -108,8 +112,8 @@ public class Auth {
         System.out.println("response:" + response.body());
 
         // save accessToken
-        String[] responseBody = response.body().split("[:,]");
-        accessToken = responseBody[1].replaceAll("\"", "");
+        JsonObject responseParsed = JsonParser.parseString(response.body()).getAsJsonObject();
+        accessToken = responseParsed.get("access_token").getAsString();
     }
 
     private static String generateRequestURL() {

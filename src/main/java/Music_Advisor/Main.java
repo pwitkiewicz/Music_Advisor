@@ -1,4 +1,6 @@
-package application;
+package Music_Advisor;
+
+import Music_Advisor.api.Auth;
 
 import java.io.IOException;
 
@@ -9,7 +11,7 @@ public class Main {
         if (args.length != 0) {
             for (int i = 0; i < args.length - 1; i++) {
                 if (args[i].equals("-access")) {
-                    api.Auth.setAuthServer(args[i + 1]);
+                    Auth.setAuthServer(args[i + 1]);
                 }
             }
         }
