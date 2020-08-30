@@ -1,11 +1,11 @@
 package Music_Advisor;
 
-import Music_Advisor.api.Auth;
+import Music_Advisor.api.*;
 
 import java.io.IOException;
 import java.util.Scanner;
 
-public class Menu {
+class Menu {
     public static void launch() throws IOException, InterruptedException {
         Scanner in = new Scanner(System.in);
         String command = "";
@@ -32,7 +32,7 @@ public class Menu {
         if(command.equals("auth")) {
             Auth.init();
 
-            if (Auth.getStatus()) {
+            if (Auth.isAuthorized()) {
                 System.out.println("---SUCCESS---");
             } else {
                 System.out.println("code not received");
@@ -40,48 +40,27 @@ public class Menu {
             }
         }
 
-        if(!Auth.getStatus()) {
+        if(!Auth.isAuthorized()) {
             System.out.println("Please, provide access for main.java.Music_Advisor.application.");
             return;
         }
 
         if(command.equals("featured")) {
-            // TODO main.java.Music_Advisor.api integration
-            System.out.println("---FEATURED---\n" +
-                    "Mellow Morning\n" +
-                    "Wake Up and Smell the Coffee\n" +
-                    "Monday Motivation\n" +
-                    "Songs to Sing in the Shower");
+            Client.getFeatured();
         }
 
         if(command.equals("new")) {
-            // TODO main.java.Music_Advisor.api integration
-            System.out.println("---NEW RELEASES---\n" +
-                    "Mountains [Sia, Diplo, Labrinth]\n" +
-                    "Runaway [Lil Peep]\n" +
-                    "The Greatest Show [Panic! At The Disco]\n" +
-                    "All Out Life [Slipknot]");
+            Client.getNewReleases();
         }
 
         if(command.equals("categories")) {
-            // TODO main.java.Music_Advisor.api integration
-            System.out.println("---CATEGORIES---\n" +
-                    "Top Lists\n" +
-                    "Pop\n" +
-                    "Mood\n" +
-                    "Latin");
+            Client.getCategories();
         }
 
         String[] playlists_command = command.split("\\s+");
 
         if(playlists_command[0].equals("playlists")) {
-            // TODO main.java.Music_Advisor.api integration
-            System.out.println("---" + playlists_command[1].toUpperCase() + " PLAYLISTS---\n" +
-                    "Walk Like A Badass  \n" +
-                    "Rage Beats  \n" +
-                    "Arab Mood Booster  \n" +
-                    "Sunday Stroll");
-
+            Client.getCategoryPlaylists(command.replace("playlists ", " "));
         }
     }
 }

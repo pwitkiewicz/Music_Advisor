@@ -15,21 +15,28 @@ import java.net.http.HttpResponse;
 import java.util.Base64;
 
 public class Auth {
-    private static boolean isAuthorized = false;
+    private static boolean authorized = false;
+
     private static String authCode = "";
     private static String accessToken = "";
-    private static final String clientID = "1a3b4e258da845a4b2478cb266af39d0";
-    private static final String clientSecret = "d9d6f245e2e3456dbda2d3aef2a2d84a";
+
     private static String redirectURL = "http://localhost:8080";
     private static String authServer = "https://accounts.spotify.com";
 
+    private static final String CLIENT_ID = "1a3b4e258da845a4b2478cb266af39d0";
+    private static final String CLIENT_SECRET = "d9d6f245e2e3456dbda2d3aef2a2d84a";
 
-    public static boolean getStatus() {
-        return isAuthorized;
+
+    public static boolean isAuthorized() {
+        return authorized;
     }
 
     public static void setAuthServer(String address) {
         authServer = address;
+    }
+
+    static String getAccessToken() {
+        return accessToken;
     }
 
     public static void init() throws IOException, InterruptedException {
@@ -42,7 +49,7 @@ public class Auth {
         if (authCode.isEmpty()) {
             return;
         } else {
-            isAuthorized = true;
+            authorized = true;
         }
 
         System.out.println("code received" +
@@ -50,7 +57,7 @@ public class Auth {
         requestToken();
     }
 
-    private static void listenForQuery() throws IOException, InterruptedException {
+    private static void listenForQuery() throws IOException {
         // start the server & listen incoming TCP connections on 8080 port
         HttpServer server = HttpServer.create();
         server.bind(new InetSocketAddress(8080), 0);
@@ -92,7 +99,7 @@ public class Auth {
         HttpClient client = HttpClient.newBuilder().build();
 
         // encode client credentials
-        String toEncode = clientID + ":" + clientSecret;
+        String toEncode = CLIENT_ID + ":" + CLIENT_SECRET;
         String credentials = Base64.getEncoder().encodeToString(toEncode.getBytes());
 
         // create POST request for accessToken
@@ -118,7 +125,7 @@ public class Auth {
 
     private static String generateRequestURL() {
         return authServer + "/authorize?" +
-                "client_id=" + clientID +
+                "client_id=" + CLIENT_ID +
                 "&redirect_uri=" + redirectURL +
                 "&response_type=code";
     }
