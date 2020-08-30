@@ -107,8 +107,16 @@ public class Client {
 
         String apiPath = "/v1/browse/categories/" + id + "/playlists";
 
-        JsonArray categoryPlaylists = sendGETRequest(apiServerPath + apiPath)
-                .get("playlists").getAsJsonObject().get("items").getAsJsonArray();
+        JsonObject response = sendGETRequest(apiServerPath + apiPath);
+        JsonArray categoryPlaylists = null;
+
+        if(response.toString().contains("error")) {
+            JsonObject error = response.get("error").getAsJsonObject();
+            System.out.println(error.get("message").toString());
+            return;
+        } else {
+            categoryPlaylists = response.get("playlists").getAsJsonObject().get("items").getAsJsonArray();
+        }
 
         // print 5 category playlists
         printPlaylists(categoryPlaylists, 5);
