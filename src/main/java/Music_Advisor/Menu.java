@@ -1,11 +1,14 @@
 package Music_Advisor;
 
 import Music_Advisor.api.*;
+import com.google.gson.JsonArray;
 
 import java.io.IOException;
 import java.util.Scanner;
 
 class Menu {
+    private static int pageSize = 5;
+
     public static void launch() throws IOException, InterruptedException {
         Scanner in = new Scanner(System.in);
         String command = "";
@@ -46,21 +49,28 @@ class Menu {
         }
 
         if(command.equals("featured")) {
-            Client.getFeatured();
+            JsonArray featured = Client.getFeatured();
+            Printer.printPlaylists(featured, pageSize);
         }
 
         if(command.equals("new")) {
-            Client.getNewReleases();
+            JsonArray newReleases = Client.getNewReleases();
+            Printer.printAlbums(newReleases, pageSize);
         }
 
         if(command.equals("categories")) {
-            Client.getCategories();
+            JsonArray categories = Client.getCategories();
+            Printer.printCategories(categories);
         }
 
         String[] playlists_command = command.split("\\s+");
 
         if(playlists_command[0].equals("playlists")) {
-            Client.getCategoryPlaylists(command.replace("playlists ", " "));
+            String category = command.replace("playlists ", " ");
+            JsonArray categoryPlaylists =  Client.getCategoryPlaylists(category);
+
+            if(categoryPlaylists != null)
+                Printer.printPlaylists(categoryPlaylists, pageSize);
         }
     }
 }

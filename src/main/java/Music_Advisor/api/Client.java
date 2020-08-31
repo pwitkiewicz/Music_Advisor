@@ -19,79 +19,34 @@ public class Client {
         apiServerPath = path;
     }
 
-    private static void printAlbums(JsonArray albums, int printCounter) {
-        if(albums.size() < printCounter) {
-            printCounter = albums.size();
-        }
-
-        for (int i = 0; i < printCounter; i++) {
-            JsonObject album = albums.get(i).getAsJsonObject();
-            // album title
-            System.out.println(album.get("name").getAsString());
-
-            // artists
-            StringBuilder artists = new StringBuilder("[");
-            JsonArray artistsArr = album.get("artists").getAsJsonArray();
-            for (int j = 0; j < artistsArr.size(); j++) {
-                artists.append(artistsArr.get(j)
-                        .getAsJsonObject().get("name").toString().replace("\"", ""));
-                if(j < artistsArr.size() - 1) {
-                    artists.append(", ");
-                }
-            }
-            artists.append("]");
-            System.out.println(artists.toString());
-
-            // spotify link
-            System.out.println(album.get("external_urls")
-                    .getAsJsonObject().get("spotify").toString().replace("\"", "") + "\n");
-        }
-    }
-
-    private static void printPlaylists(JsonArray playlists, int printCounter) {
-        if(playlists.size() < printCounter) {
-            printCounter = playlists.size();
-        }
-
-        for (int i = 0; i < printCounter; i++) {
-            System.out.println(playlists.get(i)
-                    .getAsJsonObject().get("name").toString().replace("\"", ""));
-            System.out.println(playlists.get(i).getAsJsonObject().get("external_urls").
-                    getAsJsonObject().get("spotify").toString().replace("\"", "") + "\n");
-        }
-    }
-
-    public static void getNewReleases() throws IOException, InterruptedException {
+    public static JsonArray getNewReleases() throws IOException, InterruptedException {
         String apiPath = "/v1/browse/new-releases";
-        JsonArray newReleases = sendGETRequest(apiServerPath + apiPath)
+
+        return sendGETRequest(apiServerPath + apiPath)
                 .get("albums").getAsJsonObject().get("items").getAsJsonArray();
-
-        // printing 7 new releases
-        printAlbums(newReleases, 7);
     }
 
-    public static void getFeatured() throws IOException, InterruptedException {
+    public static JsonArray getFeatured() throws IOException, InterruptedException {
         String apiPath = "/v1/browse/featured-playlists";
-        JsonArray featuredPlaylists = sendGETRequest(apiServerPath + apiPath)
-                .get("playlists").getAsJsonObject().get("items").getAsJsonArray();
 
-        // printing 7 featured playlists
-        printPlaylists(featuredPlaylists, 7);
+        return sendGETRequest(apiServerPath + apiPath)
+                .get("playlists").getAsJsonObject().get("items").getAsJsonArray();
     }
 
-    public static void getCategories() throws IOException, InterruptedException {
+    public static JsonArray getCategories() throws IOException, InterruptedException {
         String apiPath = "/v1/browse/categories";
         JsonArray categories = sendGETRequest(apiServerPath + apiPath)
                 .get("categories").getAsJsonObject().get("items").getAsJsonArray();
 
-        // printing categories
+        // saving categories
         for (int i = 0; i < categories.size(); i++) {
             categoryIDs.add(categories.get(i).getAsJsonObject().get("id").toString().replace("\"", ""));
-            System.out.println(categories.get(i).getAsJsonObject().get("name").toString().replace("\"", ""));
         }
+
+        return categories;
     }
 
-    public static void getCategoryPlaylists(String category) throws IOException, InterruptedException {
+    public static JsonArray getCategoryPlaylists(String category) throws IOException, InterruptedException {
         // checking if categories list is populated, populating if not
         if(categoryIDs.isEmpty()) {
             getCategoriesIDs();
@@ -100,9 +55,13 @@ public class Client {
         // convertging category name to category id
         String id = category.replaceAll("\\s+", "").toLowerCase();
 
+        if(id.equals("partytime")) {
+            id = "party";
+        }
+
         if(!categoryIDs.contains(id)) {
             System.out.println("Unknown category name.");
-            return;
+            return null;
         }
 
         String apiPath = "/v1/browse/categories/" + id + "/playlists";
@@ -113,13 +72,12 @@ public class Client {
         if(response.toString().contains("error")) {
             JsonObject error = response.get("error").getAsJsonObject();
             System.out.println(error.get("message").toString());
-            return;
+            return null;
         } else {
             categoryPlaylists = response.get("playlists").getAsJsonObject().get("items").getAsJsonArray();
         }
 
-        // print 5 category playlists
-        printPlaylists(categoryPlaylists, 5);
+        return categoryPlaylists;
     }
 
     private static void getCategoriesIDs() throws IOException, InterruptedException {
@@ -147,7 +105,6 @@ public class Client {
         HttpResponse<String> response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
         // parse and return JSON object
-        JsonObject responseParsed = JsonParser.parseString(response.body()).getAsJsonObject();
-        return responseParsed;
+        return JsonParser.parseString(response.body()).getAsJsonObject();
     }
 }
