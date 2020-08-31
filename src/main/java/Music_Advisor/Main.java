@@ -16,6 +16,9 @@ public class Main {
                 if (args[i].equals("-resource")) {
                     Client.setApiServerPath(args[i + 1]);
                 }
+                if (args[i].equals("-page")) {
+                    Printer.setPageLength(Integer.parseInt(args[i + 1]));
+                }
             }
         }
 

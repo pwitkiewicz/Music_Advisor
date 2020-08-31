@@ -1,13 +1,21 @@
 package Music_Advisor;
 
 import Music_Advisor.api.*;
+
 import com.google.gson.JsonArray;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 class Menu {
-    private static int pageSize = 5;
+
+    private static int currentPage = 0;
+    private static ArrayList<String> toPrint;
+
+    static void setCurrentPage(int currPage) {
+        currentPage = currPage;
+    }
 
     public static void launch() throws IOException, InterruptedException {
         Scanner in = new Scanner(System.in);
@@ -44,23 +52,47 @@ class Menu {
         }
 
         if(!Auth.isAuthorized()) {
-            System.out.println("Please, provide access for main.java.Music_Advisor.application.");
+            System.out.println("Please, provide access for application.");
             return;
         }
 
         if(command.equals("featured")) {
             JsonArray featured = Client.getFeatured();
-            Printer.printPlaylists(featured, pageSize);
+            toPrint = Printer.printPlaylists(featured);
+            currentPage = 0;
+            Printer.print(toPrint, currentPage);
         }
 
         if(command.equals("new")) {
             JsonArray newReleases = Client.getNewReleases();
-            Printer.printAlbums(newReleases, pageSize);
+            toPrint = Printer.printAlbums(newReleases);
+            currentPage = 0;
+            Printer.print(toPrint, currentPage);
         }
 
         if(command.equals("categories")) {
             JsonArray categories = Client.getCategories();
-            Printer.printCategories(categories);
+            toPrint = Printer.printCategories(categories);
+            currentPage = 0;
+            Printer.print(toPrint, currentPage);
+        }
+
+        if(command.equals("prev")) {
+            if(currentPage ==  0) {
+                System.out.println("No more pages");
+            } else {
+                currentPage--;
+                Printer.print(toPrint, currentPage);
+            }
+        }
+
+        if(command.equals("next")) {
+            if(currentPage == Printer.getTotalPages() - 1) {
+                System.out.println("No more pages");
+            } else {
+                currentPage++;
+                Printer.print(toPrint, currentPage);
+            }
         }
 
         String[] playlists_command = command.split("\\s+");
@@ -68,9 +100,9 @@ class Menu {
         if(playlists_command[0].equals("playlists")) {
             String category = command.replace("playlists ", " ");
             JsonArray categoryPlaylists =  Client.getCategoryPlaylists(category);
-
-            if(categoryPlaylists != null)
-                Printer.printPlaylists(categoryPlaylists, pageSize);
+            toPrint = Printer.printPlaylists(categoryPlaylists);
+            currentPage = 0;
+            Printer.print(toPrint, currentPage);
         }
     }
 }
