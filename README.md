@@ -1,2 +1,8 @@
 # Music_Advisor
-my jetbrains academy project on spotify music advisor
+My Jetbrains Academy project on spotify music advisor
+
+
+## What's done
+* OAuth app authorization
+* Simple Spotify API client parsing JSON answers from the server
+* Building app with Gradle
